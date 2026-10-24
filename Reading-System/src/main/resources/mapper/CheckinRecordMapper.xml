@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.readingsystem.mapper.CheckinRecordMapper">
+
+    <!-- 本周打卡天数 -->
+    <select id="countWeekDays" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT checkin_date)
+        FROM checkin_record
+        WHERE user_id = #{userId}
+          AND status = 1
+          AND deleted = 0
+          AND checkin_date &gt;= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+          AND checkin_date &lt;= CURDATE()
+    </select>
+
+    <!-- 本月打卡天数 -->
+    <select id="countMonthDays" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT checkin_date)
+        FROM checkin_record
+        WHERE user_id = #{userId}
+          AND status = 1
+          AND deleted = 0
+          AND DATE_FORMAT(checkin_date, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+    </select>
+
+    <!-- 本年打卡天数 -->
+    <select id="countYearDays" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT checkin_date)
+        FROM checkin_record
+        WHERE user_id = #{userId}
+          AND status = 1
+          AND deleted = 0
+          AND YEAR(checkin_date) = YEAR(CURDATE())
+    </select>
+
+    <!-- 圈子今日打卡态势(看板) -->
+    <select id="todaySituation" resultType="java.util.Map">
+        SELECT
+          COUNT(DISTINCT CASE WHEN checkin_type = 2 THEN user_id END) AS audioUsers,
+          COUNT(DISTINCT CASE WHEN checkin_type = 1 THEN user_id END) AS readUsers,
+          COUNT(DISTINCT CASE WHEN checkin_type = 3 THEN user_id END) AS noteUsers,
+          COUNT(DISTINCT user_id) AS totalUsers
+        FROM checkin_record
+        WHERE circle_id = #{circleId}
+          AND checkin_date = CURDATE()
+          AND status = 1
+          AND deleted = 0
+    </select>
+
+    <!-- 圈子今日活跃小组数(看板) -->
+    <select id="countActiveGroups" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT group_id)
+        FROM checkin_record
+        WHERE circle_id = #{circleId}
+          AND checkin_date = CURDATE()
+          AND status = 1
+          AND deleted = 0
+          AND group_id IS NOT NULL
+    </select>
+
+    <!-- 小组周排行榜 -->
+    <select id="groupWeekRank" resultType="java.util.Map">
+        SELECT
+          r.group_id AS groupId,
+          g.name AS groupName,
+          COUNT(DISTINCT r.user_id) AS activeUsers,
+          COUNT(DISTINCT r.user_id, r.checkin_date) AS totalCheckins
+        FROM checkin_record r
+        LEFT JOIN t_group g ON r.group_id = g.id
+        WHERE r.circle_id = #{circleId}
+          AND r.status = 1
+          AND r.deleted = 0
+          AND r.group_id IS NOT NULL
+          AND r.checkin_date &gt;= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+        GROUP BY r.group_id, g.name
+        ORDER BY totalCheckins DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 打卡率趋势(近N天) -->
+    <select id="checkinTrend" resultType="java.util.Map">
+        SELECT
+          checkin_date AS checkinDate,
+          COUNT(DISTINCT user_id) AS checkinUsers
+        FROM checkin_record
+        WHERE circle_id = #{circleId}
+          AND status = 1
+          AND deleted = 0
+          AND checkin_date &gt;= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+        GROUP BY checkin_date
+        ORDER BY checkin_date
+    </select>
+
+    <!-- 公开动态分页(联查用户昵称头像书名，仅限用户已加入的读书圈) -->
+    <select id="selectFeedPage" resultType="com.readingsystem.vo.CheckinFeedVO">
+        SELECT
+          r.id,
+          r.user_id AS userId,
+          u.nickname,
+          u.avatar,
+          u.checkin_days AS checkinDays,
+          r.book_id AS bookId,
+          b.title AS bookTitle,
+          r.chapter_title AS chapterTitle,
+          r.checkin_type AS checkinType,
+          r.content,
+          r.media_url AS mediaUrl,
+          r.audio_url AS audioUrl,
+          r.audio_duration AS audioDuration,
+          r.like_count AS likeCount,
+          r.comment_count AS commentCount,
+          r.view_count AS viewCount,
+          r.checkin_date AS checkinDate,
+          r.create_time AS createTime
+        FROM checkin_record r
+        LEFT JOIN sys_user u ON r.user_id = u.id
+        LEFT JOIN book b ON r.book_id = b.id
+        WHERE r.is_public = 1
+          AND r.status = 1
+          AND r.deleted = 0
+        <if test="circleIds != null and circleIds.size() > 0">
+          AND r.circle_id IN
+          <foreach collection="circleIds" item="circleId" open="(" separator="," close=")">
+            #{circleId}
+          </foreach>
+        </if>
+        <if test="checkinType != null">
+          AND r.checkin_type = #{checkinType}
+        </if>
+        ORDER BY r.create_time DESC
+    </select>
+
+</mapper>

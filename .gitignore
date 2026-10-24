@@ -1,0 +1,28 @@
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.hbuilderx/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Uploads / runtime data
+uploads/
+
+# Dependencies
+node_modules/
+
+# Maven
+Reading-System/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Uni-app build output
+Reading-client/unpackage/

@@ -1,0 +1,337 @@
+/* 通用 UI 组件样式（配合主题变量使用） */
+
+/* ---------- 图标容器 ---------- */
+.icon-chip {
+	width: 72rpx;
+	height: 72rpx;
+	border-radius: 22rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 34rpx;
+	flex-shrink: 0;
+	background: var(--primary-soft);
+	color: var(--primary);
+}
+
+.icon-chip--sm {
+	width: 56rpx;
+	height: 56rpx;
+	border-radius: 18rpx;
+	font-size: 28rpx;
+}
+
+.icon-chip--lg {
+	width: 88rpx;
+	height: 88rpx;
+	border-radius: 26rpx;
+	font-size: 40rpx;
+}
+
+.icon-blue {
+	background: rgba(46, 74, 107, 0.10);
+	color: #2E4A6B;
+}
+
+.icon-violet {
+	background: rgba(107, 91, 123, 0.12);
+	color: #6B5B7B;
+}
+
+.icon-amber {
+	background: rgba(160, 101, 31, 0.12);
+	color: #A0651F;
+}
+
+.icon-green {
+	background: rgba(47, 125, 91, 0.12);
+	color: #2F7D5B;
+}
+
+.icon-red {
+	background: rgba(179, 69, 59, 0.11);
+	color: #B3453B;
+}
+
+.icon-cyan {
+	background: rgba(47, 110, 115, 0.12);
+	color: #2F6E73;
+}
+
+.icon-pink {
+	background: rgba(163, 78, 109, 0.12);
+	color: #A34E6D;
+}
+
+.icon-gray {
+	background: var(--surface-2);
+	color: var(--text-secondary);
+}
+
+/* 暗色主题下的图标胶囊：提高亮度，避免暗底暗字 */
+.theme-dark .icon-blue {
+	background: rgba(147, 175, 203, 0.14);
+	color: #A8C0DA;
+}
+
+.theme-dark .icon-violet {
+	background: rgba(180, 165, 200, 0.14);
+	color: #C2B4D6;
+}
+
+.theme-dark .icon-amber {
+	background: rgba(208, 138, 92, 0.16);
+	color: #E4A873;
+}
+
+.theme-dark .icon-green {
+	background: rgba(79, 191, 146, 0.14);
+	color: #6FD3AB;
+}
+
+.theme-dark .icon-red {
+	background: rgba(224, 113, 104, 0.14);
+	color: #EE938C;
+}
+
+.theme-dark .icon-cyan {
+	background: rgba(95, 168, 173, 0.14);
+	color: #7FC9CE;
+}
+
+.theme-dark .icon-pink {
+	background: rgba(196, 127, 155, 0.14);
+	color: #DFA3BD;
+}
+
+/* ---------- 分段控制器 ---------- */
+.segmented {
+	display: flex;
+	align-items: center;
+	background: var(--surface-2);
+	border: 1rpx solid var(--border);
+	border-radius: var(--radius-pill);
+	padding: 8rpx;
+	gap: 8rpx;
+}
+
+.segmented__item {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 14rpx 8rpx;
+	border-radius: var(--radius-pill);
+	font-size: 26rpx;
+	line-height: 1.4;
+	white-space: nowrap;
+	color: var(--text-secondary);
+	transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.segmented__item--active {
+	background: var(--bg-secondary);
+	color: var(--text-primary);
+	font-weight: 600;
+	box-shadow: var(--shadow-sm);
+}
+
+.segmented--brand .segmented__item--active {
+	background: var(--primary-fill);
+	color: var(--on-primary);
+	box-shadow: 0 4rpx 12rpx rgba(46, 74, 107, 0.18);
+}
+
+/* ---------- 表单 ---------- */
+.field {
+	margin-top: 24rpx;
+}
+
+.field__label {
+	display: block;
+	font-size: 24rpx;
+	color: var(--text-secondary);
+	margin-bottom: 12rpx;
+}
+
+.field__row {
+	display: flex;
+	gap: 20rpx;
+}
+
+.field__col {
+	flex: 1;
+	min-width: 0;
+}
+
+/* ---------- 底部弹层 ---------- */
+.ui-sheet-mask {
+	position: fixed;
+	inset: 0;
+	background: var(--mask);
+	z-index: 1000;
+	display: flex;
+	align-items: flex-end;
+	animation: uiFadeIn 0.2s ease;
+}
+
+.ui-sheet-panel {
+	width: 100%;
+	background: var(--bg-secondary);
+	border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+	padding: 16rpx 32rpx calc(32rpx + env(safe-area-inset-bottom));
+	padding-bottom: calc(32rpx + constant(safe-area-inset-bottom));
+	padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+	box-sizing: border-box;
+	border-top: 1rpx solid var(--border);
+	box-shadow: 0 -20rpx 60rpx rgba(0, 0, 0, 0.16);
+	animation: uiSlideUp 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.ui-sheet-handle {
+	width: 72rpx;
+	height: 8rpx;
+	border-radius: var(--radius-pill);
+	background: var(--border-strong);
+	margin: 8rpx auto 24rpx;
+}
+
+.ui-sheet-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-bottom: 20rpx;
+}
+
+.ui-sheet-title {
+	font-size: 32rpx;
+	font-weight: 700;
+	color: var(--text-primary);
+}
+
+.ui-sheet-close {
+	width: 56rpx;
+	height: 56rpx;
+	border-radius: 50%;
+	background: var(--surface-2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 24rpx;
+	color: var(--text-secondary);
+}
+
+.ui-sheet-actions {
+	display: flex;
+	gap: 20rpx;
+	margin-top: 28rpx;
+}
+
+.ui-sheet-actions .btn-plain,
+.ui-sheet-actions .btn-primary {
+	flex: 1;
+}
+
+/* ---------- 居中弹窗 ---------- */
+.ui-modal-mask {
+	position: fixed;
+	inset: 0;
+	background: var(--mask);
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 48rpx;
+	animation: uiFadeIn 0.2s ease;
+}
+
+.ui-modal-card {
+	width: 100%;
+	max-width: 640rpx;
+	background: var(--bg-secondary);
+	border: 1rpx solid var(--border);
+	border-radius: var(--radius-xl);
+	padding: 40rpx 32rpx 32rpx;
+	box-sizing: border-box;
+	box-shadow: var(--shadow-lg);
+	animation: uiPopIn 0.24s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.ui-modal-head {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.ui-modal-title {
+	font-size: 34rpx;
+	font-weight: 700;
+	color: var(--text-primary);
+	text-align: center;
+}
+
+.ui-modal-desc {
+	font-size: 26rpx;
+	color: var(--text-secondary);
+	line-height: 1.7;
+	text-align: center;
+	margin-top: 16rpx;
+}
+
+/* ---------- 弹窗动画 ---------- */
+@keyframes uiFadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes uiSlideUp {
+	from { transform: translateY(100%); }
+	to { transform: translateY(0); }
+}
+
+@keyframes uiPopIn {
+	from { opacity: 0; transform: scale(0.92) translateY(12rpx); }
+	to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ---------- 列表通用 ---------- */
+.ui-list {
+	background: var(--card-bg);
+	border: 1rpx solid var(--border);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-sm);
+	overflow: hidden;
+}
+
+.ui-list__item {
+	display: flex;
+	align-items: center;
+	padding: 28rpx;
+	border-bottom: 1rpx solid var(--border);
+}
+
+.ui-list__item:last-child {
+	border-bottom: none;
+}
+
+/* ---------- 数据格 ---------- */
+.stat-cell {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 0;
+}
+
+.stat-cell__num {
+	font-size: 32rpx;
+	font-weight: 700;
+	color: var(--text-primary);
+	line-height: 1.2;
+}
+
+.stat-cell__label {
+	font-size: 22rpx;
+	color: var(--text-secondary);
+	margin-top: 8rpx;
+}

@@ -1,0 +1,174 @@
+{
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^r-icon$": "@/components/r-icon/r-icon.vue",
+			"^r-modal$": "@/components/r-modal/r-modal.vue"
+		}
+	},
+	"pages": [
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"disableScroll": true
+			}
+		},
+		{
+			"path": "pages/login/register",
+			"style": {
+				"navigationBarTitleText": "注册",
+				"disableScroll": true
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "读书打卡",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/contacts/contacts",
+			"style": {
+				"navigationBarTitleText": "通讯录",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/checkin/checkin",
+			"style": {
+				"navigationBarTitleText": "打卡"
+			}
+		},
+		{
+			"path": "pages/bookcity/bookcity",
+			"style": {
+				"navigationBarTitleText": "书城",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/book/detail",
+			"style": {
+				"navigationBarTitleText": "书籍详情"
+			}
+		},
+		{
+			"path": "pages/mine/mine",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/ranking/ranking",
+			"style": {
+				"navigationBarTitleText": "排行榜",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/mine/profile",
+			"style": {
+				"navigationBarTitleText": "个人信息"
+			}
+		},
+		{
+			"path": "pages/mine/notify",
+			"style": {
+				"navigationBarTitleText": "消息通知",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/mine/growth",
+			"style": {
+				"navigationBarTitleText": "个人成长",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/mine/favorites",
+			"style": {
+				"navigationBarTitleText": "我的收藏",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/mine/settings",
+			"style": {
+				"navigationBarTitleText": "设置"
+			}
+		},
+		{
+			"path": "pages/circle/members",
+			"style": {
+				"navigationBarTitleText": "小组成员",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/admin/super",
+			"style": {
+				"navigationBarTitleText": "超级管理",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/admin/circle",
+			"style": {
+				"navigationBarTitleText": "读书圈管理",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/admin/job",
+			"style": {
+				"navigationBarTitleText": "布置作业",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/admin/rule",
+			"style": {
+				"navigationBarTitleText": "打卡规则",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/admin/template",
+			"style": {
+				"navigationBarTitleText": "打卡模板",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/admin/data",
+			"style": {
+				"navigationBarTitleText": "数据管理"
+			}
+		},
+		{
+			"path": "pages/admin/manage",
+			"style": {
+				"navigationBarTitleText": "数据管理",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/admin/position",
+			"style": {
+				"navigationBarTitleText": "职位管理",
+				"enablePullDownRefresh": true
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "读书打卡",
+		"navigationBarBackgroundColor": "#F6F7FB",
+		"backgroundColor": "#F6F7FB"
+	},
+	"uniIdRouter": {}
+}

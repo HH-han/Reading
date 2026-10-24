@@ -1,0 +1,89 @@
+/* 液态玻璃公共样式
+ * 注意：backdrop-filter 直接作用于包裹 input 等交互元素的容器时，
+ * Chrome 会创建独立合成层，导致内部输入框无法聚焦（已知 Chromium bug）。
+ * 因此模糊效果统一放到 ::before 伪元素上，并设置 pointer-events: none。
+ */
+.glass {
+	position: relative;
+	background: var(--glass-bg);
+	border: 1px solid var(--glass-border);
+	box-shadow: var(--shadow);
+	overflow: hidden;
+}
+
+.glass::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	backdrop-filter: blur(22px) saturate(160%);
+	-webkit-backdrop-filter: blur(22px) saturate(160%);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.glass > * {
+	position: relative;
+	z-index: 1;
+}
+
+.glass-card {
+	position: relative;
+	background: var(--glass-bg);
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-sm);
+	overflow: hidden;
+}
+
+.glass-card::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	backdrop-filter: blur(22px) saturate(160%);
+	-webkit-backdrop-filter: blur(22px) saturate(160%);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.glass-card::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 12%;
+	right: 12%;
+	height: 1px;
+	background: rgba(29, 30, 34, 0.04);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.glass-card > * {
+	position: relative;
+	z-index: 1;
+}
+
+.glass-btn {
+	position: relative;
+	background: var(--glass-bg);
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-pill);
+	box-shadow: var(--shadow-sm);
+	overflow: hidden;
+}
+
+.glass-btn::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	backdrop-filter: blur(22px) saturate(160%);
+	-webkit-backdrop-filter: blur(22px) saturate(160%);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.glass-btn > * {
+	position: relative;
+	z-index: 1;
+}

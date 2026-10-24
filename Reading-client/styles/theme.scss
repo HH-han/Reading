@@ -1,0 +1,265 @@
+/* 主题 CSS 变量（纸墨风格 · 纯色体系，不使用任何渐变） */
+:root, .theme-light {
+	--bg-primary: #F5F3EE;
+	--bg-secondary: #FFFFFF;
+	--card-bg: #FFFFFF;
+	--surface-2: #F0EEE7;
+	--surface-3: #E6E3D8;
+	--text-primary: #1D1E22;
+	--text-secondary: #66676E;
+	--text-tertiary: #9A9A95;
+	--primary: #2E4A6B;
+	--primary-2: #2E4A6B;
+	--primary-soft: rgba(46, 74, 107, 0.09);
+	/* 实心填充色（用于按钮、选中态等需要白字的场景） */
+	--primary-fill: #2E4A6B;
+	--on-primary: #FFFFFF;
+	--accent: #B45F2E;
+	--border: #E5E1D6;
+	--border-strong: #D6D1C4;
+	--glass-bg: rgba(255, 255, 255, 0.9);
+	--glass-border: rgba(29, 30, 34, 0.06);
+	--tabbar-bg: rgba(255, 255, 255, 0.95);
+	--shadow-sm: 0 2rpx 8rpx rgba(29, 30, 34, 0.04);
+	--shadow: 0 8rpx 24rpx rgba(29, 30, 34, 0.06);
+	--shadow-lg: 0 18rpx 44rpx rgba(29, 30, 34, 0.1);
+	--glow-1: rgba(46, 74, 107, 0.05);
+	--glow-2: rgba(180, 95, 46, 0.05);
+	--brand: #2E4A6B;
+	--brand-soft: rgba(46, 74, 107, 0.09);
+	/* 兼容旧引用：统一指向实心填充色，不使用渐变 */
+	--brand-gradient: #2E4A6B;
+	--brand-gradient-soft: rgba(46, 74, 107, 0.09);
+	--ring: 0 0 0 6rpx rgba(46, 74, 107, 0.12);
+	--success: #2E7D5B;
+	--danger: #B3453B;
+	--warning: #B4652E;
+	--gold: #C1962A;
+	--mask: rgba(20, 20, 24, 0.46);
+	--radius-sm: 12rpx;
+	--radius-md: 20rpx;
+	--radius-lg: 28rpx;
+	--radius-xl: 36rpx;
+	--radius-pill: 999rpx;
+}
+
+.theme-dark {
+	--bg-primary: #131417;
+	--bg-secondary: #1A1B1F;
+	--card-bg: #1A1B1F;
+	--surface-2: #222328;
+	--surface-3: #2B2C32;
+	--text-primary: #E9E7E1;
+	--text-secondary: #93938E;
+	--text-tertiary: #6E6E6A;
+	--primary: #93AFCB;
+	--primary-2: #93AFCB;
+	--primary-soft: rgba(147, 175, 203, 0.14);
+	--primary-fill: #3A5673;
+	--on-primary: #F4F7FA;
+	--accent: #D08A5C;
+	--border: rgba(255, 255, 255, 0.08);
+	--border-strong: rgba(255, 255, 255, 0.14);
+	--glass-bg: rgba(26, 27, 31, 0.9);
+	--glass-border: rgba(255, 255, 255, 0.07);
+	--tabbar-bg: rgba(26, 27, 31, 0.95);
+	--shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.24);
+	--shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.32);
+	--shadow-lg: 0 18rpx 44rpx rgba(0, 0, 0, 0.45);
+	--glow-1: rgba(147, 175, 203, 0.07);
+	--glow-2: rgba(208, 138, 92, 0.05);
+	--brand: #93AFCB;
+	--brand-soft: rgba(147, 175, 203, 0.14);
+	--brand-gradient: #3A5673;
+	--brand-gradient-soft: rgba(147, 175, 203, 0.14);
+	--ring: 0 0 0 6rpx rgba(147, 175, 203, 0.18);
+	--success: #4FBF92;
+	--danger: #E07168;
+	--warning: #D08A5C;
+	--gold: #D4B04E;
+	--mask: rgba(0, 0, 0, 0.6);
+}
+
+/* 页面基础：纯色纸面，统一字号与行高，保证中文排版稳定 */
+.page {
+	min-height: 100vh;
+	background: var(--bg-primary);
+	color: var(--text-primary);
+	font-size: 28rpx;
+	line-height: 1.55;
+	letter-spacing: 0.3rpx;
+	box-sizing: border-box;
+}
+
+/* 通用主按钮：纯色块 + 明确按压反馈 */
+.btn-primary {
+	background: var(--primary-fill);
+	color: var(--on-primary);
+	border-radius: var(--radius-pill);
+	text-align: center;
+	font-size: 30rpx;
+	font-weight: 600;
+	letter-spacing: 1rpx;
+	padding: 24rpx 0;
+	box-shadow: 0 8rpx 20rpx rgba(46, 74, 107, 0.2);
+	transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.btn-primary:active {
+	transform: scale(0.98);
+	box-shadow: 0 4rpx 12rpx rgba(46, 74, 107, 0.18);
+}
+
+.btn-plain {
+	background: var(--bg-secondary);
+	color: var(--text-primary);
+	border: 1rpx solid var(--border-strong);
+	border-radius: var(--radius-pill);
+	text-align: center;
+	font-size: 30rpx;
+	font-weight: 500;
+	padding: 24rpx 0;
+	box-shadow: var(--shadow-sm);
+	transition: transform 0.18s ease;
+}
+
+.btn-plain:active {
+	transform: scale(0.98);
+}
+
+/* 通用空态 */
+.empty-box {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 100rpx 0;
+	color: var(--text-tertiary);
+	font-size: 26rpx;
+	line-height: 1.6;
+}
+
+.empty-icon {
+	width: 132rpx;
+	height: 132rpx;
+	border-radius: 50%;
+	background: var(--surface-2);
+	border: 1rpx solid var(--border);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 56rpx;
+	margin-bottom: 24rpx;
+}
+
+/* 输入框（固定高度、垂直 padding 为 0、outline none） */
+.input-item {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	height: 96rpx;
+	padding: 0 28rpx;
+	background: var(--surface-2);
+	border: 1rpx solid var(--border);
+	border-radius: var(--radius-md);
+	font-size: 28rpx;
+	line-height: 96rpx;
+	color: var(--text-primary);
+	box-sizing: border-box;
+	outline: none;
+	-webkit-appearance: none;
+	appearance: none;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.input-item:focus,
+.input-item:focus-within {
+	background: var(--bg-secondary);
+	border-color: var(--primary);
+	box-shadow: var(--ring);
+}
+
+/* textarea 复用 .input-item 时恢复多行布局 */
+textarea.input-item {
+	height: auto;
+	min-height: 180rpx;
+	padding: 24rpx 28rpx;
+	line-height: 1.7;
+}
+
+/* 占位符样式（配合 placeholder-class="input-ph"） */
+.input-ph {
+	color: var(--text-tertiary);
+	font-size: 28rpx;
+}
+
+/* 修复 H5 端 uni-input 占位符 div 遮挡原生 input 导致无法聚焦 */
+.uni-input-placeholder {
+	pointer-events: none !important;
+}
+
+.uni-input-input {
+	pointer-events: auto !important;
+}
+
+/* 通用标签 */
+.tag {
+	display: inline-flex;
+	align-items: center;
+	font-size: 20rpx;
+	font-weight: 500;
+	padding: 4rpx 16rpx;
+	border-radius: var(--radius-pill);
+	line-height: 1.5;
+	white-space: nowrap;
+}
+
+.tag-primary {
+	background: var(--primary-soft);
+	color: var(--primary);
+}
+
+.tag-success {
+	background: rgba(46, 125, 91, 0.12);
+	color: var(--success);
+}
+
+.tag-warning {
+	background: rgba(180, 101, 46, 0.12);
+	color: var(--warning);
+}
+
+.tag-danger {
+	background: rgba(179, 69, 59, 0.11);
+	color: var(--danger);
+}
+
+.tag-muted {
+	background: var(--surface-2);
+	color: var(--text-secondary);
+}
+
+/* 通用分区标题 */
+.block-title {
+	display: flex;
+	align-items: center;
+	font-size: 28rpx;
+	font-weight: 700;
+	color: var(--text-primary);
+	letter-spacing: 0.5rpx;
+}
+
+.block-title::before {
+	content: '';
+	width: 6rpx;
+	height: 26rpx;
+	border-radius: var(--radius-pill);
+	background: var(--primary);
+	margin-right: 14rpx;
+}
+
+/* 通用列表分隔线 */
+.soft-divider {
+	height: 1rpx;
+	background: var(--border);
+}

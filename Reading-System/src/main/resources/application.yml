@@ -1,0 +1,45 @@
+server:
+  port: 2026
+
+spring:
+  application:
+    name: reading-system
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+# Sa-Token 配置
+sa-token:
+  token-name: satoken
+  timeout: 604800
+  active-timeout: -1
+  is-concurrent: true
+  is-share: true
+  token-style: uuid
+  is-log: false
+  is-read-cookie: false
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.readingsystem.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    banner: false
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: auto
+
+# 文件上传根路径
+upload:
+  path: ./uploads
+
+logging:
+  config: classpath:logback-spring.xml
