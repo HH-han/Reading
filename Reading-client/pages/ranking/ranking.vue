@@ -35,54 +35,65 @@
 
 			<template v-else>
 				<!-- 前三名 -->
-				<view class="podium glass-card">
-					<view class="podium-deco"></view>
-					<view class="podium-item" v-for="p in podium" :key="p.item.id || p.place" :class="'place-' + p.place">
-						<view class="podium-avatar-wrap" :class="'ring-' + p.place">
-							<r-icon name="vip-crown-fill" class="podium-crown" color="#C1962A" v-if="p.place === 1" />
-							<image
-								class="podium-avatar"
-								v-if="scopeType === 1"
-								:src="p.item.avatar || '/static/logo.png'"
-								mode="aspectFill"
-							/>
-							<view class="podium-avatar group-icon" v-else>
-								<r-icon name="group-2-line" class="group-icon-text" />
-							</view>
-							<view class="podium-medal">
-								<r-icon name="medal-fill" :color="p.place === 1 ? '#C1962A' : (p.place === 2 ? '#B9BFC9' : '#C08963')" />
-							</view>
+			<view class="podium glass-card">
+				<view class="podium-deco"></view>
+				<view
+					class="podium-item"
+					v-for="(p, idx) in podium"
+					:key="p.item.id || p.place"
+					:class="'place-' + p.place"
+					:style="{ animationDelay: (idx * 120) + 'ms' }"
+				>
+					<view class="podium-avatar-wrap" :class="'ring-' + p.place">
+						<r-icon name="vip-crown-fill" class="podium-crown" color="#C1962A" v-if="p.place === 1" />
+						<image
+							class="podium-avatar"
+							v-if="scopeType === 1"
+							:src="p.item.avatar || '/static/logo.png'"
+							mode="aspectFill"
+						/>
+						<view class="podium-avatar group-icon" v-else>
+							<r-icon name="group-2-line" class="group-icon-text" />
 						</view>
-						<text class="podium-name">{{ displayName(p.item) }}</text>
-						<text class="podium-days">{{ $t('ranking.days', { n: itemDays(p.item) }) }}</text>
-						<view class="podium-base" :class="'base-' + p.place">
-							<text class="base-no">{{ p.place }}</text>
+						<view class="podium-medal">
+							<r-icon name="medal-fill" :color="p.place === 1 ? '#C1962A' : (p.place === 2 ? '#B9BFC9' : '#C08963')" />
 						</view>
 					</view>
+					<text class="podium-name">{{ displayName(p.item) }}</text>
+					<text class="podium-days">{{ $t('ranking.days', { n: itemDays(p.item) }) }}</text>
+					<view class="podium-base" :class="'base-' + p.place" :style="{ animationDelay: (idx * 120 + 200) + 'ms' }">
+						<text class="base-no">{{ p.place }}</text>
+					</view>
 				</view>
+			</view>
 
-				<!-- 其余名次 -->
-				<view class="rank-list glass-card" v-if="rest.length">
-					<view class="rank-item" v-for="(item, i) in rest" :key="item.id || i">
-						<view class="rank-no">
-							<text class="rank-no-text">{{ i + 4 }}</text>
-						</view>
-						<view class="r-avatar-ring">
-							<image class="r-avatar" v-if="scopeType === 1" :src="item.avatar || '/static/logo.png'" mode="aspectFill" />
-							<view class="r-avatar group-icon" v-else>
-								<r-icon name="group-2-line" class="group-icon-text" />
-							</view>
-						</view>
-						<view class="r-main">
-							<text class="r-name">{{ displayName(item) }}</text>
-							<text class="r-days">{{ $t('ranking.checkinDays') }}：{{ $t('ranking.days', { n: itemDays(item) }) }}</text>
-						</view>
-						<view class="r-score">
-							<text class="r-score-num">{{ itemDays(item) }}</text>
-							<text class="r-score-unit">{{ $t('ranking.daysUnit') }}</text>
+			<!-- 其余名次 -->
+			<view class="rank-list glass-card" v-if="rest.length">
+				<view
+					class="rank-item"
+					v-for="(item, i) in rest"
+					:key="item.id || i"
+					:style="{ animationDelay: (i * 60 + 200) + 'ms' }"
+				>
+					<view class="rank-no">
+						<text class="rank-no-text">{{ i + 4 }}</text>
+					</view>
+					<view class="r-avatar-ring">
+						<image class="r-avatar" v-if="scopeType === 1" :src="item.avatar || '/static/logo.png'" mode="aspectFill" />
+						<view class="r-avatar group-icon" v-else>
+							<r-icon name="group-2-line" class="group-icon-text" />
 						</view>
 					</view>
+					<view class="r-main">
+						<text class="r-name">{{ displayName(item) }}</text>
+						<text class="r-days">{{ $t('ranking.checkinDays') }}：{{ $t('ranking.days', { n: itemDays(item) }) }}</text>
+					</view>
+					<view class="r-score">
+						<text class="r-score-num">{{ itemDays(item) }}</text>
+						<text class="r-score-unit">{{ $t('ranking.daysUnit') }}</text>
+					</view>
 				</view>
+			</view>
 			</template>
 		</view>
 
@@ -240,6 +251,8 @@
 		width: 30%;
 		position: relative;
 		z-index: 1;
+		opacity: 0;
+		animation: podiumRise 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 	}
 
 	.podium-item.place-1 {
@@ -255,6 +268,7 @@
 		border-radius: 50%;
 		background: #C1962A;
 		box-shadow: 0 6rpx 16rpx rgba(193, 150, 42, 0.26);
+		animation: ringGlow 2.4s ease-in-out infinite;
 	}
 
 	.ring-2 {
@@ -301,6 +315,7 @@
 		transform: translateX(-50%);
 		font-size: 38rpx;
 		z-index: 2;
+		animation: crownFloat 2.2s ease-in-out infinite;
 	}
 
 	.podium-medal {
@@ -335,21 +350,24 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		transform: scaleY(0);
+		transform-origin: bottom;
+		animation: baseGrow 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 	}
 
 	.base-1 {
 		height: 92rpx;
-		background: #C1962A;
+		background: linear-gradient(180deg, #D4A93A 0%, #C1962A 100%);
 	}
 
 	.base-2 {
 		height: 66rpx;
-		background: #B9BFC9;
+		background: linear-gradient(180deg, #C9CED6 0%, #B9BFC9 100%);
 	}
 
 	.base-3 {
 		height: 52rpx;
-		background: #C08963;
+		background: linear-gradient(180deg, #CE9A76 0%, #C08963 100%);
 	}
 
 	.base-no {
@@ -370,6 +388,14 @@
 		align-items: center;
 		padding: 22rpx 0;
 		border-bottom: 1rpx solid var(--border);
+		opacity: 0;
+		transform: translateY(16rpx);
+		animation: rankItemIn 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+		transition: background 0.2s ease, transform 0.2s ease;
+	}
+
+	.rank-item:active {
+		background: var(--primary-soft);
 	}
 
 	.rank-item:last-child {
@@ -444,5 +470,58 @@
 		font-size: 19rpx;
 		color: var(--text-tertiary);
 		margin-left: 4rpx;
+	}
+
+	/* ---------- 动画关键帧 ---------- */
+	@keyframes podiumRise {
+		0% {
+			opacity: 0;
+			transform: translateY(40rpx) scale(0.92);
+		}
+		60% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+
+	@keyframes baseGrow {
+		0% {
+			transform: scaleY(0);
+		}
+		100% {
+			transform: scaleY(1);
+		}
+	}
+
+	@keyframes crownFloat {
+		0%, 100% {
+			transform: translateX(-50%) translateY(0);
+		}
+		50% {
+			transform: translateX(-50%) translateY(-8rpx);
+		}
+	}
+
+	@keyframes ringGlow {
+		0%, 100% {
+			box-shadow: 0 6rpx 16rpx rgba(193, 150, 42, 0.26);
+		}
+		50% {
+			box-shadow: 0 6rpx 28rpx rgba(193, 150, 42, 0.55);
+		}
+	}
+
+	@keyframes rankItemIn {
+		0% {
+			opacity: 0;
+			transform: translateY(16rpx);
+		}
+		100% {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 </style>

@@ -35,20 +35,26 @@
 				<text>{{ $t('index.statEmpty') }}</text>
 			</view>
 			<view class="stars-row" v-else>
-				<view class="star" v-for="(s, i) in stars" :key="i">
-					<view class="star-avatar-wrap" :class="'rank-' + i">
-						<r-icon
-							class="crown"
-							:class="'crown-' + i"
-							:name="['vip-crown-fill', 'medal-fill', 'medal-fill'][i]"
-							:color="['#C1962A', '#B9BFC9', '#C08963'][i]"
-						/>
-						<image class="star-avatar" :src="s.avatar || '/static/logo.png'" mode="aspectFill" />
-					</view>
-					<text class="star-name">{{ s.nickname || s.name || '-' }}</text>
-					<text class="star-days">{{ $t('ranking.days', { n: starDays(s) }) }}</text>
+			<view
+				class="star"
+				v-for="(p, i) in podiumStars"
+				:key="i"
+				:class="{ 'star--champion': p.place === 0 }"
+				:style="{ animationDelay: (i * 110) + 'ms' }"
+			>
+				<view class="star-avatar-wrap" :class="'rank-' + p.place">
+					<r-icon
+						class="crown"
+						:class="'crown-' + p.place"
+						:name="['vip-crown-fill', 'medal-fill', 'medal-fill'][p.place]"
+						:color="['#C1962A', '#B9BFC9', '#C08963'][p.place]"
+					/>
+					<image class="star-avatar" :src="p.item.avatar || '/static/logo.png'" mode="aspectFill" />
 				</view>
+				<text class="star-name">{{ p.item.nickname || p.item.name || '-' }}</text>
+				<text class="star-days">{{ $t('ranking.days', { n: starDays(p.item) }) }}</text>
 			</view>
+		</view>
 		</view>
 
 		<!-- 打卡率图表 -->
@@ -68,22 +74,63 @@
 					>{{ $t(r.label) }}</text>
 				</view>
 			</view>
-			<view class="days-row" v-if="daysInfo">
-				<text class="days-text" v-if="requiredDays != null">
-					{{ rangeDays }} / {{ $t('index.requiredDays', { n: requiredDays }) }}
-				</text>
-				<text class="days-text" v-else>{{ $t('index.daysInRange', { n: rangeDays }) }}</text>
+			<view class="goal-row" v-if="daysInfo">
+				<view class="goal-meta">
+					<text class="goal-my">{{ $t('index.daysInRange', { n: rangeDays }) }}</text>
+					<text class="goal-target" v-if="requiredDays != null">{{ $t('index.requiredDays', { n: requiredDays }) }}</text>
+				</view>
+				<view class="goal-track" v-if="requiredDays">
+					<view class="goal-fill" :style="{ width: goalPct + '%' }"></view>
+				</view>
 			</view>
 			<view class="empty-box" v-if="!trend.length">
 				<text>{{ $t('index.statEmpty') }}</text>
 			</view>
 			<view class="chart" v-else>
-				<view class="bar-col" v-for="(b, i) in trend" :key="i">
-					<text class="bar-value">{{ b.showValue ? b.value + '%' : '' }}</text>
-					<view class="bar-wrap">
-						<view class="bar" :style="{ height: barHeight(b) + '%' }"></view>
+				<!-- 顶部数值行：仅展示当前选中日期（本月默认今日），避免标签重叠 -->
+				<view class="value-row">
+					<view class="value-col" v-for="(b, i) in trend" :key="'v' + i">
+						<text class="bar-value" :class="{ 'bar-value--active': i === activeIndex }">{{ showValue(i) ? b.value + '%' : '' }}</text>
 					</view>
-					<text class="bar-label">{{ b.label }}</text>
+				</view>
+				<view class="plot-body">
+					<view class="y-axis">
+						<text
+							v-for="t in yTicks"
+							:key="'y' + t"
+							class="y-tick"
+							:style="{ bottom: t + '%' }"
+						>{{ t }}%</text>
+					</view>
+					<view class="chart-main">
+						<view
+							v-for="t in gridTicks"
+							:key="'g' + t"
+							class="grid-line"
+							:style="{ bottom: t + '%' }"
+						></view>
+						<view class="bars">
+							<view class="bar-col" v-for="(b, i) in trend" :key="i" @click="selectBar(i)">
+								<view
+									class="bar"
+									:class="{
+										'bar--today': isToday(i),
+										'bar--zero': !b.value,
+										'bar--active': i === activeIndex
+									}"
+									:style="{ height: barHeight(b) + '%' }"
+								></view>
+							</view>
+						</view>
+					</view>
+				</view>
+				<view class="x-axis">
+					<text
+						v-for="(b, i) in trend"
+						:key="'x' + i"
+						class="x-tick"
+						:style="xTickStyle(i)"
+					>{{ b.showLabel ? b.label : '' }}</text>
 				</view>
 			</view>
 		</view>
@@ -98,9 +145,18 @@
 
 	const my = ref({})
 	const stars = ref([])
+	const podiumStars = computed(() => {
+		const top = stars.value.slice(0, 3)
+		const order = [1, 0, 2] // 亚军、冠军、季军
+		return order
+			.filter(idx => top[idx])
+			.map(idx => ({ item: top[idx], place: idx }))
+	})
 	const daysInfo = ref(null)
 	const trend = ref([])
 	const range = ref('week')
+	// 当前选中柱子的下标（本月默认选中今日）
+	const activeIndex = ref(-1)
 
 	const ranges = [
 		{ key: 'week', label: 'index.week', days: 7 },
@@ -147,12 +203,58 @@
 	const maxTrend = computed(() => {
 		let m = 0
 		trend.value.forEach(b => { if (b.value > m) m = b.value })
-		return m || 1
+		return m
+	})
+
+	// 纵轴上限按 20% 台阶取整，避免柱子过高或全部挤在底部
+	const axisMax = computed(() => Math.max(20, Math.ceil((maxTrend.value || 1) / 20) * 20))
+
+	const midTick = computed(() => axisMax.value / 2)
+
+	// 网格线（0、中值、上限）
+	const gridTicks = computed(() => [0, midTick.value, axisMax.value])
+
+	// 纵轴刻度文字（只标注中值与上限）
+	const yTicks = computed(() => [midTick.value, axisMax.value])
+
+	// 合格目标完成度
+	const goalPct = computed(() => {
+		const need = requiredDays.value
+		if (!need) return 0
+		return Math.max(0, Math.min(100, Math.round((rangeDays.value / need) * 100)))
 	})
 
 	function barHeight(b) {
 		if (!b.value) return 0
-		return Math.max(4, Math.round((b.value / maxTrend.value) * 100))
+		return Math.max(3, Math.round((b.value / axisMax.value) * 100))
+	}
+
+	// 本月数据点密集，只显示选中柱子的数值，避免标签相互挤压
+	function showValue(i) {
+		if (range.value === 'month') return i === activeIndex.value
+		return i === activeIndex.value || trend.value[i].value > 0
+	}
+
+	function selectBar(i) {
+		activeIndex.value = i
+	}
+
+	function isToday(i) {
+		if (range.value === 'year') return i === new Date().getMonth()
+		return i === trend.value.length - 1
+	}
+
+	// 首尾刻度贴边，其余居中，避免左右溢出卡片
+	function xTickStyle(i) {
+		const n = trend.value.length
+		if (!n) return {}
+		if (i === 0) return { left: '0', transform: 'translateX(0)' }
+		if (i === n - 1) return { right: '0', transform: 'translateX(0)' }
+		return { left: ((i + 0.5) / n * 100) + '%', transform: 'translateX(-50%)' }
+	}
+
+	function fmtShort(d) {
+		return (d.getMonth() + 1) + '/' + d.getDate()
 	}
 
 	function pad(n) {
@@ -175,7 +277,7 @@
 				.filter(k => k.startsWith(prefix))
 				.reduce((sum, k) => sum + rateMap[k], 0)
 			const value = Math.round(total / days)
-			list.push({ label: String(m + 1), value, showValue: value > 0 })
+			list.push({ label: String(m + 1), value, showLabel: true })
 		}
 		return list
 	}
@@ -191,18 +293,19 @@
 		})
 		if (range.value === 'year') return monthlyTrend(rateMap)
 		const isMonth = range.value === 'month'
-		const span = isMonth ? 30 : 7
 		const today = new Date()
+		// 本月只展示当月已过天数，避免出现上个月的日期
+		const span = isMonth ? today.getDate() : 7
 		const list = []
 		for (let i = span - 1; i >= 0; i--) {
 			const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i)
 			const key = fmtDate(d)
 			const value = rateMap[key] || 0
 			list.push({
-				// 本月数据点较多，每 5 天显示一次日期，避免标签重叠
-				label: isMonth ? (d.getDate() % 5 === 0 || i === 0 ? key.slice(5) : '') : key.slice(5),
-				value,
-				showValue: !isMonth || value > 0
+				// 本月数据点较多，只保留首尾和每 5 天的日期，避免刻度重叠
+				label: fmtShort(d),
+				showLabel: !isMonth || i === 0 || i === span - 1 || d.getDate() % 5 === 0,
+				value
 			})
 		}
 		return list
@@ -223,12 +326,18 @@
 
 	async function loadTrend() {
 		const r = ranges.find(x => x.key === range.value)
+		// 本月按当月已过天数取数，保证刻度不会跨到上个月
+		const days = range.value === 'month' ? new Date().getDate() : r.days
 		try {
-			const data = await getTrend({ days: r.days })
+			const data = await getTrend({ days })
 			trend.value = normalizeTrend(data)
 		} catch (e) {
 			trend.value = []
 		}
+		// 默认选中今日（本年选中当前月份）
+		activeIndex.value = range.value === 'year'
+			? new Date().getMonth()
+			: trend.value.length - 1
 	}
 
 	function switchRange(key) {
@@ -356,6 +465,13 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		opacity: 0;
+		transform: translateY(24rpx);
+		animation: starRise 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+	}
+
+	.star--champion {
+		margin-top: -18rpx;
 	}
 
 	.star-avatar-wrap {
@@ -371,7 +487,11 @@
 		z-index: 2;
 	}
 
-	.crown-0 { font-size: 44rpx; top: -44rpx; }
+	.crown-0 {
+		font-size: 44rpx;
+		top: -44rpx;
+		animation: crownFloat 2.2s ease-in-out infinite;
+	}
 
 	.star-avatar {
 		width: 96rpx;
@@ -426,56 +546,183 @@
 		flex: none;
 	}
 
-	.days-row {
+	.goal-row {
 		margin-top: 18rpx;
 	}
 
-	.days-text {
+	.goal-meta {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+	}
+
+	.goal-my {
 		font-size: 23rpx;
-		color: var(--text-secondary);
+		color: var(--text-primary);
+		font-weight: 600;
+	}
+
+	.goal-target {
+		font-size: 21rpx;
+		color: var(--text-tertiary);
+	}
+
+	.goal-track {
+		height: 8rpx;
+		margin-top: 12rpx;
+		border-radius: var(--radius-pill);
+		background: var(--surface-2);
+		overflow: hidden;
+	}
+
+	.goal-fill {
+		height: 100%;
+		border-radius: var(--radius-pill);
+		background: var(--primary);
+		transition: width 0.4s ease;
 	}
 
 	.chart {
-		display: flex;
-		align-items: flex-end;
-		margin-top: 32rpx;
-		height: 280rpx;
+		margin-top: 26rpx;
 	}
 
-	.bar-col {
-		flex: 1;
+	.value-row {
 		display: flex;
-		flex-direction: column;
-		align-items: center;
-		height: 100%;
+		margin-left: 64rpx;
+		height: 30rpx;
+	}
+
+	.value-col {
+		flex: 1;
 		min-width: 0;
+		display: flex;
+		justify-content: center;
+		padding: 0 2rpx;
+		box-sizing: border-box;
 	}
 
 	.bar-value {
 		font-size: 18rpx;
+		line-height: 30rpx;
 		color: var(--text-tertiary);
-		margin-bottom: 8rpx;
+		white-space: nowrap;
 	}
 
-	.bar-wrap {
+	.bar-value--active {
+		color: var(--primary);
+		font-weight: 700;
+	}
+
+	.plot-body {
+		display: flex;
+		height: 250rpx;
+		margin-top: 6rpx;
+	}
+
+	.y-axis {
+		position: relative;
+		width: 64rpx;
+		flex-shrink: 0;
+	}
+
+	.y-tick {
+		position: absolute;
+		right: 16rpx;
+		font-size: 18rpx;
+		line-height: 1;
+		color: var(--text-tertiary);
+		transform: translateY(50%);
+	}
+
+	.chart-main {
+		position: relative;
 		flex: 1;
-		width: 100%;
+		min-width: 0;
+	}
+
+	.grid-line {
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: 1rpx;
+		background: var(--border);
+	}
+
+	.bars {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		display: flex;
+		align-items: flex-end;
+	}
+
+	.bar-col {
+		flex: 1;
+		height: 100%;
+		min-width: 0;
+		padding: 0 2rpx;
+		box-sizing: border-box;
 		display: flex;
 		align-items: flex-end;
 		justify-content: center;
 	}
 
 	.bar {
-		width: 56%;
-		max-width: 36rpx;
-		border-radius: 10rpx 10rpx 0 0;
+		width: 70%;
+		max-width: 30rpx;
+		min-height: 3rpx;
+		border-radius: 8rpx 8rpx 0 0;
 		background: var(--primary);
+		transition: height 0.35s ease, width 0.2s ease;
 	}
 
-	.bar-label {
-		font-size: 18rpx;
-		color: var(--text-tertiary);
+	.bar--today {
+		background: var(--accent);
+	}
+
+	.bar--zero {
+		background: var(--surface-3);
+	}
+
+	.bar--active {
+		width: 92%;
+	}
+
+	.x-axis {
+		position: relative;
+		margin-left: 64rpx;
+		height: 30rpx;
 		margin-top: 10rpx;
+	}
+
+	.x-tick {
+		position: absolute;
+		top: 0;
+		font-size: 18rpx;
+		line-height: 30rpx;
+		color: var(--text-tertiary);
 		white-space: nowrap;
+	}
+
+	@keyframes starRise {
+		0% {
+			opacity: 0;
+			transform: translateY(24rpx);
+		}
+		100% {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes crownFloat {
+		0%, 100% {
+			transform: translateX(-50%) translateY(0);
+		}
+		50% {
+			transform: translateX(-50%) translateY(-7rpx);
+		}
 	}
 </style>
