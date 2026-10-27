@@ -105,7 +105,7 @@
 	import { themeState } from '@/store/theme.js'
 	import { userState, fetchUserInfo } from '@/store/user.js'
 	import { t } from '@/utils/i18n.js'
-	import { onShow, onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
+	import { onLoad, onShow, onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
 	import FloatTabbar from '@/components/float-tabbar/float-tabbar.vue'
 	import TaskPanel from './components/task-panel.vue'
 	import FeedPanel from './components/feed-panel.vue'
@@ -174,6 +174,15 @@
 		{ key: 'index.points', value: user.value.points || 0 },
 		{ key: 'index.checkin', value: user.value.checkinDays || 0 }
 	])
+
+	onLoad((options) => {
+		// 支持 ?tab=2 从其他页面直接定位到指定面板（如打卡提交后回到动态）
+		const tab = Number(options && options.tab)
+		if (!Number.isNaN(tab) && panelRefs[tab]) {
+			activeTab.value = tab
+			visited.add(tab)
+		}
+	})
 
 	onShow(() => {
 		fetchUserInfo().catch(() => {})

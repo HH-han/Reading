@@ -87,11 +87,13 @@
 	const inShelf = ref(false)
 
 	onLoad(async (query) => {
-		if (!query.id) return
+		const id = query && query.id
+		if (!id || id === 'undefined') return
 		try {
-			const data = await getBookDetail(query.id)
-			book.value = data || {}
-			inShelf.value = !!book.value.inShelf
+			const data = await getBookDetail(id)
+			const info = (data && data.book) || {}
+			book.value = { ...info, chapters: (data && data.chapters) || [] }
+			inShelf.value = !!data.inShelf
 		} catch (e) {}
 	})
 
@@ -105,6 +107,7 @@
 	}
 
 	function goCheckin() {
+		if (!book.value.id) return
 		uni.navigateTo({ url: '/pages/checkin/checkin?bookId=' + book.value.id })
 	}
 </script>

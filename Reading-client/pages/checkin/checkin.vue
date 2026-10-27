@@ -267,14 +267,20 @@
 			loadRecord(editId.value)
 			return
 		}
-		if (options && options.bookId) {
-			getBookDetail(options.bookId)
-				.then(book => {
-					selectedBook.value = book
+		const bookId = options && options.bookId
+		if (bookId && bookId !== 'undefined') {
+			getBookDetail(bookId)
+				.then(data => {
+					selectedBook.value = pickBookInfo(data)
 				})
 				.catch(() => {})
 		}
 	})
+
+	// 书籍详情接口返回 { book, chapters }，这里统一取出书籍信息
+	function pickBookInfo(data) {
+		return (data && data.book) ? { ...data.book } : (data || {})
+	}
 
 	// 每次进入页面都按当前选择的读书圈重新拉取模板，保证卡片渲染与所设模板一致
 	onShow(() => {
@@ -314,7 +320,7 @@
 				: null
 			if (rec.bookId) {
 				try {
-					selectedBook.value = await getBookDetail(rec.bookId)
+					selectedBook.value = pickBookInfo(await getBookDetail(rec.bookId))
 				} catch (e) {
 					selectedBook.value = { id: rec.bookId }
 				}
@@ -423,8 +429,14 @@
 				await submitCheckin(payload)
 			}
 			uni.hideLoading()
-			uni.showToast({ title: editId.value ? t('checkin.saveSuccess') : t('checkin.submitSuccess'), icon: 'success' })
-			setTimeout(() => uni.navigateBack(), 800)
+			if (editId.value) {
+				uni.showToast({ title: t('checkin.saveSuccess'), icon: 'success' })
+				setTimeout(() => uni.navigateBack(), 800)
+			} else {
+				uni.showToast({ title: t('checkin.submitSuccess'), icon: 'success' })
+				// 提交成功后回到首页并定位到“动态”面板
+				setTimeout(() => uni.reLaunch({ url: '/pages/index/index?tab=2' }), 800)
+			}
 		} catch (e) {
 			// 上传/提交失败时接口层已弹出 toast，toast 会接管并关闭 loading，
 			// 这里只在没有 toast 的异常(如响应解析失败)下兜底关闭，避免 hideLoading 与 showLoading 不配对

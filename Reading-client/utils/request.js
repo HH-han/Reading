@@ -1,6 +1,7 @@
 import { t } from '@/utils/i18n.js'
 
-export const BASE_URL = 'http://localhost:2026'
+// 接口基础地址：优先读取 .env 环境变量，未配置时回退到本地后端
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2026'
 
 export function request(options) {
 	return new Promise((resolve, reject) => {
